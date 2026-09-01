@@ -1,0 +1,100 @@
+{"id": "ferrando-train-1213", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the year of birth for the player 'Altron Jackson'?", "wrapper": "neutral"}
+{"id": "ferrando-train-3697", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "Who is the director of the movie 'Night of Destiny'?", "wrapper": "neutral"}
+{"id": "ferrando-test-199", "role": "F", "source": "javiferran/sae_entities", "split": "test", "prompt": "Who is the director of the movie 'The Cool World'?", "wrapper": "neutral"}
+{"id": "ferrando-train-249", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the year of birth for the player 'Shelvin Mack'?", "wrapper": "neutral"}
+{"id": "ferrando-train-1163", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "Who is the director of the movie 'Flight of the Eagle'?", "wrapper": "neutral"}
+{"id": "ferrando-test-248", "role": "F", "source": "javiferran/sae_entities", "split": "test", "prompt": "How large, in number, is the population of the city 'Tucacas'?", "wrapper": "neutral"}
+{"id": "ferrando-train-4524", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "Who is the director of the movie 'Antonia and Jane'?", "wrapper": "neutral"}
+{"id": "ferrando-train-4877", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the year of birth for the player 'George Sutor'?", "wrapper": "neutral"}
+{"id": "ferrando-train-4233", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "How large, in number, is the population of the city 'Purnia'?", "wrapper": "neutral"}
+{"id": "ferrando-train-1017", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "Who is the director of the movie 'Rumor Has It…'?", "wrapper": "neutral"}
+{"id": "ferrando-validation-298", "role": "F", "source": "javiferran/sae_entities", "split": "validation", "prompt": "Who is the director of the movie 'How I Discovered America'?", "wrapper": "neutral"}
+{"id": "ferrando-train-1850", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the year of birth for the player 'Ed Elisma'?", "wrapper": "neutral"}
+{"id": "ferrando-train-2586", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "How large, in number, is the population of the city 'Kolwezi'?", "wrapper": "neutral"}
+{"id": "ferrando-train-1973", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What was the release year for the movie 'The Star of Rio'?", "wrapper": "neutral"}
+{"id": "ferrando-train-2527", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "How large, in number, is the population of the city 'Șipote'?", "wrapper": "neutral"}
+{"id": "ferrando-train-732", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "Who is the director of the movie 'Fake-Out'?", "wrapper": "neutral"}
+{"id": "ferrando-train-1259", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the publication year of the song 'Love of a Lifetime'?", "wrapper": "neutral"}
+{"id": "ferrando-train-4771", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "Who is the director of the movie 'War of the Colossal Beast'?", "wrapper": "neutral"}
+{"id": "ferrando-train-4126", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "How large, in number, is the population of the city 'Nevada City'?", "wrapper": "neutral"}
+{"id": "ferrando-train-3755", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the year of birth for the player 'Hakeem Olajuwon'?", "wrapper": "neutral"}
+{"id": "ferrando-train-3480", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "Who is the director of the movie 'The Woman and the Stranger'?", "wrapper": "neutral"}
+{"id": "ferrando-train-4584", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "Who is the director of the movie 'The Closet'?", "wrapper": "neutral"}
+{"id": "ferrando-train-3098", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What geographic coordinates correspond to the city of 'Azuga'?", "wrapper": "neutral"}
+{"id": "ferrando-test-56", "role": "F", "source": "javiferran/sae_entities", "split": "test", "prompt": "What was the release year for the movie 'Welcome, Reverend!'?", "wrapper": "neutral"}
+{"id": "ferrando-test-128", "role": "F", "source": "javiferran/sae_entities", "split": "test", "prompt": "Who is the director of the movie 'The Holy Quaternity'?", "wrapper": "neutral"}
+{"id": "ferrando-train-4138", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the publication year of the song 'Breakfast in America'?", "wrapper": "neutral"}
+{"id": "ferrando-train-1577", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "How large, in number, is the population of the city 'Shahrisabz'?", "wrapper": "neutral"}
+{"id": "ferrando-validation-296", "role": "F", "source": "javiferran/sae_entities", "split": "validation", "prompt": "What is the publication year of the song 'Family Portrait'?", "wrapper": "neutral"}
+{"id": "ferrando-train-1219", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the year of birth for the player 'Bob Tough'?", "wrapper": "neutral"}
+{"id": "ferrando-train-3151", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "How large, in number, is the population of the city 'Sangüesa/Zangoza'?", "wrapper": "neutral"}
+{"id": "ferrando-test-70", "role": "F", "source": "javiferran/sae_entities", "split": "test", "prompt": "What is the publication year of the song 'Mo Money Mo Problems'?", "wrapper": "neutral"}
+{"id": "ferrando-validation-234", "role": "F", "source": "javiferran/sae_entities", "split": "validation", "prompt": "How large, in number, is the population of the city 'Zell am Harmersbach'?", "wrapper": "neutral"}
+{"id": "ferrando-train-3337", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the publication year of the song 'This Town Ain't Big Enough for Both of Us'?", "wrapper": "neutral"}
+{"id": "ferrando-train-4862", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "How large, in number, is the population of the city 'Cottbus'?", "wrapper": "neutral"}
+{"id": "ferrando-train-2402", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the year of birth for the player 'Melvin Sanders'?", "wrapper": "neutral"}
+{"id": "ferrando-train-227", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "How large, in number, is the population of the city 'Tarcău'?", "wrapper": "neutral"}
+{"id": "ferrando-train-4817", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What geographic coordinates correspond to the city of 'Jupânești'?", "wrapper": "neutral"}
+{"id": "ferrando-test-28", "role": "F", "source": "javiferran/sae_entities", "split": "test", "prompt": "What is the year of birth for the player 'Travis Best'?", "wrapper": "neutral"}
+{"id": "ferrando-train-4278", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the publication year of the song 'Did I Let You Know'?", "wrapper": "neutral"}
+{"id": "ferrando-train-361", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the year of birth for the player 'Eric Osmundson'?", "wrapper": "neutral"}
+{"id": "ferrando-validation-507", "role": "F", "source": "javiferran/sae_entities", "split": "validation", "prompt": "What geographic coordinates correspond to the city of 'Eastbourne'?", "wrapper": "neutral"}
+{"id": "ferrando-test-11", "role": "F", "source": "javiferran/sae_entities", "split": "test", "prompt": "What was the release year for the movie 'Il resto della notte'?", "wrapper": "neutral"}
+{"id": "ferrando-train-1742", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the year of birth for the player 'José Ortiz'?", "wrapper": "neutral"}
+{"id": "ferrando-train-2878", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What was the release year for the movie 'Anchorman 2: The Legend Continues'?", "wrapper": "neutral"}
+{"id": "ferrando-test-407", "role": "F", "source": "javiferran/sae_entities", "split": "test", "prompt": "What geographic coordinates correspond to the city of 'Sort'?", "wrapper": "neutral"}
+{"id": "ferrando-train-719", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the publication year of the song 'I Could Break Your Heart Any Day of the Week'?", "wrapper": "neutral"}
+{"id": "ferrando-train-2842", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What was the release year for the movie 'Let's Make Money'?", "wrapper": "neutral"}
+{"id": "ferrando-train-1852", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "Who is the director of the movie 'The Missionaries'?", "wrapper": "neutral"}
+{"id": "ferrando-train-367", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the year of birth for the player 'Morlon Wiley'?", "wrapper": "neutral"}
+{"id": "ferrando-test-507", "role": "F", "source": "javiferran/sae_entities", "split": "test", "prompt": "How large, in number, is the population of the city 'Certeju de Sus'?", "wrapper": "neutral"}
+{"id": "ferrando-train-3529", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the year of birth for the player 'Laurent Pluvy'?", "wrapper": "neutral"}
+{"id": "ferrando-test-613", "role": "F", "source": "javiferran/sae_entities", "split": "test", "prompt": "What was the release year for the movie 'The Irony of Fate'?", "wrapper": "neutral"}
+{"id": "ferrando-train-3371", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "How large, in number, is the population of the city 'Breckerfeld'?", "wrapper": "neutral"}
+{"id": "ferrando-train-2912", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "How large, in number, is the population of the city 'Beersheba'?", "wrapper": "neutral"}
+{"id": "ferrando-train-1826", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "How large, in number, is the population of the city 'Monor'?", "wrapper": "neutral"}
+{"id": "ferrando-train-2495", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What was the release year for the movie 'Tandoori Love'?", "wrapper": "neutral"}
+{"id": "ferrando-train-4593", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What was the release year for the movie 'Goodbye Charlie'?", "wrapper": "neutral"}
+{"id": "ferrando-train-2007", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What geographic coordinates correspond to the city of 'Bridgewater'?", "wrapper": "neutral"}
+{"id": "ferrando-train-3248", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the year of birth for the player 'Ebony Hoffman'?", "wrapper": "neutral"}
+{"id": "ferrando-train-2722", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the publication year of the song 'Don't Take Away My Heart'?", "wrapper": "neutral"}
+{"id": "ferrando-train-3259", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What was the release year for the movie 'Flores de otro mundo'?", "wrapper": "neutral"}
+{"id": "ferrando-test-342", "role": "F", "source": "javiferran/sae_entities", "split": "test", "prompt": "What was the release year for the movie 'The Ghoul'?", "wrapper": "neutral"}
+{"id": "ferrando-train-2806", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "Who is the director of the movie 'Gangs of New York'?", "wrapper": "neutral"}
+{"id": "ferrando-train-2469", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What was the release year for the movie 'Fake-Out'?", "wrapper": "neutral"}
+{"id": "ferrando-train-953", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "Who is the director of the movie 'Gräfin Mariza'?", "wrapper": "neutral"}
+{"id": "ferrando-train-2085", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the publication year of the song 'Seventh Heaven'?", "wrapper": "neutral"}
+{"id": "ferrando-train-3627", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What geographic coordinates correspond to the city of 'Dijon'?", "wrapper": "neutral"}
+{"id": "ferrando-validation-526", "role": "F", "source": "javiferran/sae_entities", "split": "validation", "prompt": "How large, in number, is the population of the city 'Advance'?", "wrapper": "neutral"}
+{"id": "ferrando-train-1996", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What geographic coordinates correspond to the city of 'Alicante'?", "wrapper": "neutral"}
+{"id": "ferrando-train-753", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "How large, in number, is the population of the city 'Heimsheim'?", "wrapper": "neutral"}
+{"id": "ferrando-train-245", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "Who is the director of the movie 'Furia infernal'?", "wrapper": "neutral"}
+{"id": "ferrando-train-596", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What was the release year for the movie 'God Help the Girl'?", "wrapper": "neutral"}
+{"id": "ferrando-train-118", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What geographic coordinates correspond to the city of 'Târgu Bujor'?", "wrapper": "neutral"}
+{"id": "ferrando-train-405", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What was the release year for the movie 'The Grand Bazaar'?", "wrapper": "neutral"}
+{"id": "ferrando-train-3125", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "Who is the director of the movie 'Robert Zimmermann Is Tangled Up in Love'?", "wrapper": "neutral"}
+{"id": "ferrando-train-1062", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What geographic coordinates correspond to the city of 'Puerto Madryn'?", "wrapper": "neutral"}
+{"id": "ferrando-train-2163", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What geographic coordinates correspond to the city of 'Błażowa'?", "wrapper": "neutral"}
+{"id": "ferrando-test-156", "role": "F", "source": "javiferran/sae_entities", "split": "test", "prompt": "What was the release year for the movie 'Everything Is Illuminated'?", "wrapper": "neutral"}
+{"id": "ferrando-train-4008", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the year of birth for the player 'Dale Hamilton'?", "wrapper": "neutral"}
+{"id": "ferrando-train-3274", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "Who is the director of the movie 'We Want the Colonels'?", "wrapper": "neutral"}
+{"id": "ferrando-train-2752", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the year of birth for the player 'J. R. Koch'?", "wrapper": "neutral"}
+{"id": "ferrando-train-3895", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "How large, in number, is the population of the city 'Bahir Dar'?", "wrapper": "neutral"}
+{"id": "ferrando-validation-190", "role": "F", "source": "javiferran/sae_entities", "split": "validation", "prompt": "Who is the director of the movie 'Bal-Can-Can'?", "wrapper": "neutral"}
+{"id": "ferrando-train-1078", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the year of birth for the player 'Charles Edge'?", "wrapper": "neutral"}
+{"id": "ferrando-train-3732", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the publication year of the song 'Realize'?", "wrapper": "neutral"}
+{"id": "ferrando-train-1753", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "How large, in number, is the population of the city 'Schirgiswalde-Kirschau'?", "wrapper": "neutral"}
+{"id": "ferrando-train-2425", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "How large, in number, is the population of the city 'Yreka'?", "wrapper": "neutral"}
+{"id": "ferrando-train-2764", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What geographic coordinates correspond to the city of 'Tarnogród'?", "wrapper": "neutral"}
+{"id": "ferrando-train-2881", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the publication year of the song 'Human Nature'?", "wrapper": "neutral"}
+{"id": "ferrando-train-82", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "How large, in number, is the population of the city 'La Tablada'?", "wrapper": "neutral"}
+{"id": "ferrando-test-386", "role": "F", "source": "javiferran/sae_entities", "split": "test", "prompt": "How large, in number, is the population of the city 'Nabire'?", "wrapper": "neutral"}
+{"id": "ferrando-train-2522", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the publication year of the song 'Take Me on the Floor'?", "wrapper": "neutral"}
+{"id": "ferrando-train-2987", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the year of birth for the player 'Roger Powell'?", "wrapper": "neutral"}
+{"id": "ferrando-train-1453", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What was the release year for the movie 'Groom Lake'?", "wrapper": "neutral"}
+{"id": "ferrando-train-1766", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What geographic coordinates correspond to the city of 'Teremia Mare'?", "wrapper": "neutral"}
+{"id": "ferrando-train-1350", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What geographic coordinates correspond to the city of 'Alamor'?", "wrapper": "neutral"}
+{"id": "ferrando-train-4141", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What is the publication year of the song 'Crazy on You'?", "wrapper": "neutral"}
+{"id": "ferrando-validation-15", "role": "F", "source": "javiferran/sae_entities", "split": "validation", "prompt": "What is the publication year of the song 'All I Ask of You'?", "wrapper": "neutral"}
+{"id": "ferrando-train-2314", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "What was the release year for the movie 'Dog Day'?", "wrapper": "neutral"}
+{"id": "ferrando-train-2815", "role": "F", "source": "javiferran/sae_entities", "split": "train", "prompt": "How large, in number, is the population of the city 'Büsum'?", "wrapper": "neutral"}

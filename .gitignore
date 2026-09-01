@@ -216,3 +216,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Editors / OS
+.DS_Store
+
+# Hugging Face / dataset caches (large, re-downloadable — not the curated
+# protocol samples under data/processed/, which ARE tracked)
+huggingface_cache/
+datasets_cache/
