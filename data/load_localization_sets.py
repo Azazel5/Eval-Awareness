@@ -3,9 +3,10 @@
 
 There was no loader file before this. Downloads were run ad hoc in a shell.
 
-    A  BBQ              Hugging Face  walledai/BBQ
-    B  FORTRESS         Hugging Face  ScaleAI/fortress_public
-    F  Ferrando entities  GitHub only   javiferran/sae_entities
+    A  BBQ                Hugging Face  walledai/BBQ
+    B  FORTRESS           Hugging Face  ScaleAI/fortress_public
+    F  Ferrando entities    GitHub only   javiferran/sae_entities
+    E  EvalAwareBench      Hugging Face  aisa-group/EvalAwareBench
 
 Usage (from the MATS Fall 2026 folder):
 
@@ -35,6 +36,7 @@ PROCESSED_DIR = REPO_ROOT / "data" / "processed"
 
 BBQ_HF = "walledai/BBQ"
 FORTRESS_HF = "ScaleAI/fortress_public"
+EVALAWAREBENCH_HF = "aisa-group/EvalAwareBench"
 FERRANDO_PROMPTS_URL = (
     "https://raw.githubusercontent.com/javiferran/sae_entities/main/"
     "dataset/processed/entity_prompts/gemma-2-2b-it_wikidata_splits.json"
@@ -213,6 +215,44 @@ def ferrando_records(splits: dict[str, list[str]]) -> list[dict[str, Any]]:
     return out
 
 
+def load_eval_aware_bench() -> Dataset:
+    """Full 2^8 factorial: 100 tasks x {safety, capability} x 256 factor combos."""
+    return load_dataset(EVALAWAREBENCH_HF, "prompts", split="train")
+
+
+def eval_aware_bench_records(ds: Dataset) -> list[dict[str, Any]]:
+    """Matched pairs per task: naturalistic baseline vs. F8-only ("explicit
+    evaluation disclosure") flipped, all other 7 factors held realistic.
+
+    This is the clean version of what EXPLICIT_EVAL_RE approximates by regex
+    on B: an isolated, factor-controlled eval-disclosure contrast rather than
+    a lexical one.
+    """
+    out: list[dict[str, Any]] = []
+    for i, row in enumerate(ds):
+        factors_varied = tuple(row["factors_varied"])
+        if factors_varied == ("none (baseline)",):
+            variant = "baseline"
+        elif factors_varied == ("F8",):
+            variant = "f8_disclosed"
+        else:
+            continue
+        out.append(
+            {
+                "id": f"evalawarebench-{row['task_id']}-{variant}-{i}",
+                "role": "E",
+                "source": EVALAWAREBENCH_HF,
+                "task_id": row["task_id"],
+                "task_name": row["task_name"],
+                "valence": row["valence"],
+                "variant": variant,
+                "config": row["config"],
+                "prompt": row["prompt"],
+            }
+        )
+    return out
+
+
 def sample_records(
     rows: list[dict[str, Any]], budget: int, seed: int
 ) -> list[dict[str, Any]]:
@@ -278,6 +318,11 @@ def main() -> None:
         + f"  total={len(ferrando)}"
     )
 
+    print(f"E  loading {EVALAWAREBENCH_HF} …")
+    eab_ds = load_eval_aware_bench()
+    eab = eval_aware_bench_records(eab_ds)
+    print(f"   {len(eab)} matched baseline/f8-disclosed rows ({len(eab_ds)} total factorial rows)")
+
     catalogs: dict[str, list[dict[str, Any]]] = {}
     if not args.skip_entity_catalog:
         print("F  loading Ferrando entity catalogs (player/movie/city/song) …")
@@ -294,6 +339,11 @@ def main() -> None:
         args.head,
     )
     print_head("F  Ferrando prompts  GitHub gemma-2-2b-it_wikidata_splits.json", ferrando, args.head)
+    print_head(
+        f"E  EvalAwareBench  {EVALAWAREBENCH_HF}  (baseline vs. F8-disclosed pairs)",
+        eab,
+        args.head,
+    )
     if catalogs:
         player_head = [
             {
@@ -309,6 +359,7 @@ def main() -> None:
         "A_bbq": sample_records(bbq, args.budget, args.seed),
         "B_fortress": sample_records(fortress, args.budget, args.seed),
         "F_ferrando": sample_records(ferrando, args.budget, args.seed),
+        "E_evalawarebench": sample_records(eab, args.budget, args.seed),
     }
     print("\n" + "=" * 88)
     print(
