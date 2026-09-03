@@ -41,6 +41,7 @@ def load_qwen3(
     dtype: str = "bfloat16",
     device_map: str = "auto",
     attn_implementation: str = "sdpa",
+    gradient_checkpointing: bool = False,
 ) -> LoadedModel:
     """Load Qwen3 for CUDA inference.
 
@@ -49,6 +50,14 @@ def load_qwen3(
         Use for run_qwen3_inference.py.
       - "eager": slower, but exposes per-head attention weights needed by
         atp_star.py's QK-fix. Use for the ATP* run.
+
+    gradient_checkpointing: recompute activations during backward instead
+    of storing all of them — trades compute for a large memory reduction.
+    Only relevant when you're actually calling .backward() (atp_star.py);
+    run_qwen3_inference.py never backprops so leave this off there. This is
+    the fix for a CUDA OOM during AtP*'s backward pass — NOT dtype (bf16 and
+    fp16 are both 2 bytes/element; switching between them changes nothing
+    about memory here).
     """
     if not torch.cuda.is_available():
         raise RuntimeError(
@@ -64,6 +73,9 @@ def load_qwen3(
         device_map=device_map,
         attn_implementation=attn_implementation,
     )
+    if gradient_checkpointing:
+        model.gradient_checkpointing_enable()
+        model.config.use_cache = False  # incompatible with checkpointing
     model.eval()
     device = next(model.parameters()).device
     return LoadedModel(model=model, tokenizer=tokenizer, device=device)

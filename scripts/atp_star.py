@@ -630,6 +630,19 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--dtype", default="bfloat16", choices=["bfloat16", "float16", "float32"])
     parser.add_argument("--device-map", default="auto")
+    parser.add_argument(
+        "--gradient-checkpointing",
+        action="store_true",
+        help="trade compute for memory during the backward pass — use this if you hit a "
+        "CUDA OOM (not --dtype: bf16/fp16 are the same size, dtype isn't the lever here)",
+    )
+    parser.add_argument(
+        "--no-qk-fix",
+        action="store_true",
+        help="skip per-head Q/K attribution and its replay calls, and load with attn_implementation="
+        "'sdpa' instead of 'eager' (much less memory) — you only get attn_out/mlp_out layer-level "
+        "scores, no per-head Q/K. A second lever for OOM, on top of --gradient-checkpointing.",
+    )
     parser.add_argument("--output", type=Path, default=REPO_ROOT / "results" / "atp_star.json")
     args = parser.parse_args()
     return args
@@ -697,8 +710,15 @@ def main() -> None:
         print(f"would score {ok} pairs, skip {skipped_length} for length mismatch, {skipped_no_cot} for missing eval CoT")
         return
 
-    print(f"loading {args.model} with attn_implementation=eager (needed for QK-fix) …")
-    loaded = load_qwen3(args.model, dtype=args.dtype, device_map=args.device_map, attn_implementation="eager")
+    attn_impl = "sdpa" if args.no_qk_fix else "eager"
+    print(f"loading {args.model} with attn_implementation={attn_impl} …")
+    loaded = load_qwen3(
+        args.model,
+        dtype=args.dtype,
+        device_map=args.device_map,
+        attn_implementation=attn_impl,
+        gradient_checkpointing=args.gradient_checkpointing,
+    )
     model = loaded.model
     capture = Qwen3Capture(model)
     metric_fn = make_metric_fn(tokenizer)
@@ -722,7 +742,7 @@ def main() -> None:
         if clean_ids.shape != corrupt_ids.shape:
             skipped_length += 1
             continue
-        scores = compute_atp_star(capture, metric_fn, clean_ids, corrupt_ids)
+        scores = compute_atp_star(capture, metric_fn, clean_ids, corrupt_ids, include_qk_fix=not args.no_qk_fix)
         all_scores.append(scores)
         if first_valid_pair is None:
             first_valid_pair = (clean_ids, corrupt_ids)
