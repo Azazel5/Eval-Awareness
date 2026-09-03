@@ -631,17 +631,27 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dtype", default="bfloat16", choices=["bfloat16", "float16", "float32"])
     parser.add_argument("--device-map", default="auto")
     parser.add_argument(
+        "--load-in-8bit",
+        action="store_true",
+        help="quantize weights via bitsandbytes (pip install bitsandbytes) — roughly halves "
+        "Qwen3-32B's ~65GB bf16 footprint to ~32GB. THIS is the fix for a CUDA OOM on this "
+        "script, not --dtype (bf16/fp16 are the same size) and not --gradient-checkpointing "
+        "(see its help text for why that one's currently unsafe here).",
+    )
+    parser.add_argument(
         "--gradient-checkpointing",
         action="store_true",
-        help="trade compute for memory during the backward pass — use this if you hit a "
-        "CUDA OOM (not --dtype: bf16/fp16 are the same size, dtype isn't the lever here)",
+        help="DO NOT USE YET — known-broken with this script's hook-based gradient capture "
+        "(see qwen3_utils.load_qwen3's docstring): silently zeroes out attn_out/mlp_out scores "
+        "instead of erroring. Use --load-in-8bit for OOM instead. Left here for once the hook "
+        "lifetime bug is fixed.",
     )
     parser.add_argument(
         "--no-qk-fix",
         action="store_true",
         help="skip per-head Q/K attribution and its replay calls, and load with attn_implementation="
-        "'sdpa' instead of 'eager' (much less memory) — you only get attn_out/mlp_out layer-level "
-        "scores, no per-head Q/K. A second lever for OOM, on top of --gradient-checkpointing.",
+        "'sdpa' instead of 'eager' (less memory) — you only get attn_out/mlp_out layer-level "
+        "scores, no per-head Q/K. A secondary lever for OOM, on top of --load-in-8bit.",
     )
     parser.add_argument("--output", type=Path, default=REPO_ROOT / "results" / "atp_star.json")
     args = parser.parse_args()
@@ -718,6 +728,7 @@ def main() -> None:
         device_map=args.device_map,
         attn_implementation=attn_impl,
         gradient_checkpointing=args.gradient_checkpointing,
+        load_in_8bit=args.load_in_8bit,
     )
     model = loaded.model
     capture = Qwen3Capture(model)

@@ -42,6 +42,7 @@ def load_qwen3(
     device_map: str = "auto",
     attn_implementation: str = "sdpa",
     gradient_checkpointing: bool = False,
+    load_in_8bit: bool = False,
 ) -> LoadedModel:
     """Load Qwen3 for CUDA inference.
 
@@ -51,27 +52,59 @@ def load_qwen3(
       - "eager": slower, but exposes per-head attention weights needed by
         atp_star.py's QK-fix. Use for the ATP* run.
 
+    load_in_8bit: quantize weights via bitsandbytes (`pip install
+    bitsandbytes` if not already present). Qwen3-32B is ~65GB in bf16 —
+    on a single 80GB GPU that alone leaves only ~15GB for activations,
+    the eager-attention QK-fix machinery, and backward, which isn't
+    enough (confirmed by OOM even with gradient_checkpointing +
+    attn_implementation="sdpa"). 8-bit roughly halves the weight
+    footprint to ~32GB, which is the actual fix for that — THIS is the
+    lever for an OOM on atp_star.py, not gradient_checkpointing.
+
     gradient_checkpointing: recompute activations during backward instead
-    of storing all of them — trades compute for a large memory reduction.
-    Only relevant when you're actually calling .backward() (atp_star.py);
-    run_qwen3_inference.py never backprops so leave this off there. This is
-    the fix for a CUDA OOM during AtP*'s backward pass — NOT dtype (bf16 and
-    fp16 are both 2 bytes/element; switching between them changes nothing
-    about memory here).
+    of storing all of them. DO NOT USE with atp_star.py currently — its
+    Qwen3Capture hooks call .retain_grad() during the forward pass, then
+    the hooks are removed before .backward() runs. Under checkpointing,
+    the backward-relevant activations get recomputed from scratch inside
+    .backward(), which our (already-removed) hooks never see — so
+    clean_act.grad would silently come back None for every layer, and
+    compute_atp_star()'s `if grad is None: continue` would silently skip
+    scoring almost everything. That's wrong-results, not a crash, so this
+    flag is left here but should stay off for atp_star.py until that hook
+    lifetime is fixed to also cover .backward(). Safe for anything that
+    only calls .backward() without depending on hook-captured
+    intermediate activations.
     """
     if not torch.cuda.is_available():
         raise RuntimeError(
             "CUDA is not available in this environment. This script is meant "
             "to run on a CUDA GPU host; a 32B model is not practical on CPU/MPS."
         )
+    if gradient_checkpointing:
+        import warnings
+
+        warnings.warn(
+            "gradient_checkpointing=True: see load_qwen3's docstring — this is "
+            "known-broken with atp_star.py's hook-based gradient capture "
+            "(silently zeroes out attn_out/mlp_out scores). Use load_in_8bit "
+            "instead for an OOM on that script.",
+            stacklevel=2,
+        )
 
     torch_dtype = getattr(torch, dtype)
+    quantization_config = None
+    if load_in_8bit:
+        from transformers import BitsAndBytesConfig
+
+        quantization_config = BitsAndBytesConfig(load_in_8bit=True)
+
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForCausalLM.from_pretrained(
         model_name,
         torch_dtype=torch_dtype,
         device_map=device_map,
         attn_implementation=attn_implementation,
+        quantization_config=quantization_config,
     )
     if gradient_checkpointing:
         model.gradient_checkpointing_enable()
