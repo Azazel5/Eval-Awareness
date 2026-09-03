@@ -15,7 +15,7 @@ Usage:
 
     python scripts/run_qwen3_inference.py \
         --dataset data/eval/triggers_augmented.json \
-        --output data/results/qwen3_32b_triggers.jsonl \
+        --output results/qwen3_32b_triggers.jsonl \
         --batch-size 8 --max-new-tokens 1024
 
     # smoke test on a handful of rows before committing to a full run
@@ -46,7 +46,7 @@ from qwen3_utils import (
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DATASET = REPO_ROOT / "data" / "eval" / "triggers_augmented.json"
-DEFAULT_OUTPUT = REPO_ROOT / "data" / "results" / "qwen3_32b_triggers.jsonl"
+DEFAULT_OUTPUT = REPO_ROOT / "results" / "qwen3_32b_triggers.jsonl"
 
 
 def build_tasks(

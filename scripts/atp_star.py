@@ -62,7 +62,7 @@ two-step workflow:
      (the condition most likely to actually surface eval-related reasoning):
 
          python scripts/run_qwen3_inference.py --conditions eval \
-             --output data/results/qwen3_32b_triggers.jsonl
+             --output results/qwen3_32b_triggers.jsonl
 
   2. Run AtP*, which teacher-forces that same CoT onto every condition
      (clean AND corrupt — including eval itself, trivially) before scoring,
@@ -72,9 +72,9 @@ two-step workflow:
          python scripts/atp_star.py \
              --dataset data/eval/triggers_augmented.json \
              --side real --clean-condition control --corrupt-condition eval \
-             --cot-source data/results/qwen3_32b_triggers.jsonl \
+             --cot-source results/qwen3_32b_triggers.jsonl \
              --n-pairs 50 --top-k 100 \
-             --output data/results/atp_star_control_vs_eval.json
+             --output results/atp_star_control_vs_eval.json
 
      Pass --no-cot-attach to fall back to the generic forced-continuation
      metric (no real CoT, just METRIC_PREFIX) if you'd rather skip step 1.
@@ -184,26 +184,46 @@ CONDITION_TAGS = {
 }
 
 
-def _pad_tag_to_length(tokenizer, tag: str, target_len: int) -> str:
-    """Insert spaces just before the closing ']' until `tag` tokenizes to
-    exactly target_len tokens. Re-tokenizes on every attempt instead of
-    assuming how BPE merges whitespace."""
-    padded = tag
-    for _ in range(4 * target_len):  # generous bound; converges in <=3 in practice
-        n = len(tokenizer.encode(padded, add_special_tokens=False))
-        if n == target_len:
+def _pad_tag_to_length(tokenizer, tag: str, target_len: int, max_filler: int = 40) -> str:
+    """Insert filler chars just before the closing ']' until `tag` tokenizes
+    to exactly target_len tokens.
+
+    Two things learned empirically (Qwen3 tokenizer) that shape this:
+    - A run of spaces gets BPE-merged into a single "run" token past a
+      certain length, so hitting even +1 token via space-padding can take
+      50+ characters — a much bigger textual perturbation than intended,
+      and a plausible confound in its own right. '_' converges in ~4-5
+      chars instead, so it's the default filler.
+    - Token count vs. filler count is NOT monotonic (adding one more
+      char can occasionally drop the count before it rises again), so
+      this does a small bounded search over filler counts rather than a
+      greedy increment-and-stop-on-first-hit loop, which could otherwise
+      abort on a transient overshoot that more padding would resolve.
+    """
+    base_len = len(tokenizer.encode(tag, add_special_tokens=False))
+    if base_len > target_len:
+        raise ValueError(f"tag {tag!r} already exceeds target length {target_len} ({base_len} tokens)")
+    if base_len == target_len:
+        return tag
+    for n_filler in range(1, max_filler + 1):
+        padded = tag[:-1] + ("_" * n_filler) + tag[-1]
+        if len(tokenizer.encode(padded, add_special_tokens=False)) == target_len:
             return padded
-        if n > target_len:
-            raise ValueError(f"tag {tag!r} already exceeds target length {target_len} ({n} tokens)")
-        padded = padded[:-1] + " " + padded[-1]
-    raise ValueError(f"could not pad {tag!r} to {target_len} tokens")
+    raise ValueError(f"could not pad {tag!r} to {target_len} tokens within {max_filler} filler chars")
 
 
-def equalize_condition_tags(tokenizer) -> dict[str, str]:
-    """Length-match the three condition tags under this specific tokenizer."""
-    lengths = {c: len(tokenizer.encode(t, add_special_tokens=False)) for c, t in CONDITION_TAGS.items()}
+def equalize_condition_tags(tokenizer, conditions: list[str] | None = None) -> dict[str, str]:
+    """Length-match the condition tags under this specific tokenizer.
+
+    `conditions` restricts which of the 3 static tags to equalize against
+    each other (default: all 3). Pass just the two conditions an AtP run
+    actually uses (e.g. ["control", "eval"]) to avoid padding against a
+    third tag's length that isn't even part of this run.
+    """
+    tags = {c: t for c, t in CONDITION_TAGS.items() if conditions is None or c in conditions}
+    lengths = {c: len(tokenizer.encode(t, add_special_tokens=False)) for c, t in tags.items()}
     target = max(lengths.values())
-    return {c: _pad_tag_to_length(tokenizer, t, target) for c, t in CONDITION_TAGS.items()}
+    return {c: _pad_tag_to_length(tokenizer, t, target) for c, t in tags.items()}
 
 
 def retag_row_text(text: str, condition: str, equalized_tags: dict[str, str]) -> str:
@@ -588,7 +608,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--cot-source",
         type=Path,
-        default=REPO_ROOT / "data" / "results" / "qwen3_32b_triggers.jsonl",
+        default=REPO_ROOT / "results" / "qwen3_32b_triggers.jsonl",
         help="run_qwen3_inference.py output filtered to --conditions eval; its CoT is "
         "teacher-forced onto every condition so clean/corrupt pairs share identical "
         "downstream content (see module docstring). Required unless --no-cot-attach.",
@@ -598,9 +618,19 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="fall back to the generic forced-continuation metric (no real CoT attached)",
     )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="build and preview the teacher-forced clean/corrupt sequences over --n-pairs "
+        "(decoded text + skip counts), then exit WITHOUT loading model weights or running "
+        "AtP. Use this to sanity-check tag/CoT alignment before committing to the real run.",
+    )
+    parser.add_argument(
+        "--dry-run-preview-n", type=int, default=3, help="how many pairs to print full decoded text for"
+    )
     parser.add_argument("--dtype", default="bfloat16", choices=["bfloat16", "float16", "float32"])
     parser.add_argument("--device-map", default="auto")
-    parser.add_argument("--output", type=Path, default=REPO_ROOT / "data" / "results" / "atp_star.json")
+    parser.add_argument("--output", type=Path, default=REPO_ROOT / "results" / "atp_star.json")
     args = parser.parse_args()
     return args
 
@@ -611,17 +641,18 @@ def main() -> None:
     pairs_raw = build_pairs(rows, args.side, args.clean_condition, args.corrupt_condition)[: args.n_pairs]
     print(f"{len(pairs_raw)} aligned pairs ({args.clean_condition} clean / {args.corrupt_condition} corrupt)")
 
-    print(f"loading {args.model} with attn_implementation=eager (needed for QK-fix) …")
-    loaded = load_qwen3(args.model, dtype=args.dtype, device_map=args.device_map, attn_implementation="eager")
-    model, tokenizer = loaded.model, loaded.tokenizer
-    capture = Qwen3Capture(model)
-    metric_fn = make_metric_fn(tokenizer)
+    # Tokenizer only, no model weights yet — enough to build/verify the
+    # teacher-forced sequences (tag equalization, CoT attachment, length
+    # alignment) cheaply, and all --dry-run needs.
+    from transformers import AutoTokenizer
+
+    tokenizer = AutoTokenizer.from_pretrained(args.model)
 
     # The static json's tags are eyeballed for length parity, not verified
     # per-tokenizer (see equalize_condition_tags docstring) — re-pad them
     # for this exact tokenizer before anything gets tokenized, so the
     # clean/corrupt shape check below isn't just dropping every pair.
-    equalized_tags = equalize_condition_tags(tokenizer)
+    equalized_tags = equalize_condition_tags(tokenizer, conditions=[args.clean_condition, args.corrupt_condition])
     pairs_text = [
         (
             retag_row_text(clean, args.clean_condition, equalized_tags),
@@ -640,6 +671,37 @@ def main() -> None:
         if cot is None:
             return None
         return build_metric_input_ids_with_cot(tokenizer, text, cot)
+
+    if args.dry_run:
+        print(f"\n--- DRY RUN: previewing {min(args.dry_run_preview_n, len(pairs_text))} of {len(pairs_text)} pairs, no model loaded ---\n")
+        skipped_length = 0
+        skipped_no_cot = 0
+        ok = 0
+        for i, (clean_text, corrupt_text, source_id) in enumerate(pairs_text):
+            clean_ids = build_ids(clean_text, source_id)
+            corrupt_ids = build_ids(corrupt_text, source_id)
+            if clean_ids is None or corrupt_ids is None:
+                skipped_no_cot += 1
+                continue
+            if clean_ids.shape != corrupt_ids.shape:
+                skipped_length += 1
+                if i < args.dry_run_preview_n:
+                    print(f"[pair {i}] source={source_id}  LENGTH MISMATCH  clean={clean_ids.shape[1]} corrupt={corrupt_ids.shape[1]}")
+                continue
+            ok += 1
+            if i < args.dry_run_preview_n:
+                print(f"[pair {i}] source={source_id}  tokens={clean_ids.shape[1]} (matched)")
+                print("  clean  :", repr(tokenizer.decode(clean_ids[0])[:400]))
+                print("  corrupt:", repr(tokenizer.decode(corrupt_ids[0])[:400]))
+                print()
+        print(f"would score {ok} pairs, skip {skipped_length} for length mismatch, {skipped_no_cot} for missing eval CoT")
+        return
+
+    print(f"loading {args.model} with attn_implementation=eager (needed for QK-fix) …")
+    loaded = load_qwen3(args.model, dtype=args.dtype, device_map=args.device_map, attn_implementation="eager")
+    model = loaded.model
+    capture = Qwen3Capture(model)
+    metric_fn = make_metric_fn(tokenizer)
 
     all_scores = []
     skipped_length = 0
