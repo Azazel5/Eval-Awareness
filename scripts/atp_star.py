@@ -691,8 +691,8 @@ def main() -> None:
             ok += 1
             if i < args.dry_run_preview_n:
                 print(f"[pair {i}] source={source_id}  tokens={clean_ids.shape[1]} (matched)")
-                print("  clean  :", repr(tokenizer.decode(clean_ids[0])[:400]))
-                print("  corrupt:", repr(tokenizer.decode(corrupt_ids[0])[:400]))
+                print("  clean  :", repr(tokenizer.decode(clean_ids[0])))
+                print("  corrupt:", repr(tokenizer.decode(corrupt_ids[0])))
                 print()
         print(f"would score {ok} pairs, skip {skipped_length} for length mismatch, {skipped_no_cot} for missing eval CoT")
         return
@@ -703,11 +703,16 @@ def main() -> None:
     capture = Qwen3Capture(model)
     metric_fn = make_metric_fn(tokenizer)
 
+    import time
+
+    args.output.parent.mkdir(parents=True, exist_ok=True)
     all_scores = []
     skipped_length = 0
     skipped_no_cot = 0
     first_valid_pair = None
-    for clean_text, corrupt_text, source_id in pairs_text:
+    t_start = time.time()
+    checkpoint_every = 25
+    for i, (clean_text, corrupt_text, source_id) in enumerate(pairs_text):
         clean_ids = build_ids(clean_text, source_id)
         corrupt_ids = build_ids(corrupt_text, source_id)
         if clean_ids is None or corrupt_ids is None:
@@ -721,6 +726,42 @@ def main() -> None:
         all_scores.append(scores)
         if first_valid_pair is None:
             first_valid_pair = (clean_ids, corrupt_ids)
+
+        n_done = i + 1
+        if n_done % checkpoint_every == 0 or n_done == len(pairs_text):
+            elapsed = time.time() - t_start
+            rate = n_done / elapsed if elapsed > 0 else 0.0
+            remaining = len(pairs_text) - n_done
+            eta_min = (remaining / rate / 60) if rate > 0 else float("nan")
+            print(
+                f"  {n_done}/{len(pairs_text)} pairs  ({rate:.2f}/s, ~{eta_min:.0f} min left)  "
+                f"scored={len(all_scores)} skipped_len={skipped_length} skipped_cot={skipped_no_cot}"
+            )
+            # Checkpoint: partial ranking so far, so a killed run isn't a
+            # total loss. Gets overwritten by the final (verified) result
+            # once the full loop + verification pass completes below.
+            partial_agg = aggregate_scores(all_scores)
+            partial_ranked = sorted(partial_agg.items(), key=lambda kv: -kv[1])
+            args.output.write_text(
+                json.dumps(
+                    {
+                        "model": args.model,
+                        "side": args.side,
+                        "clean_condition": args.clean_condition,
+                        "corrupt_condition": args.corrupt_condition,
+                        "status": "in_progress",
+                        "n_pairs_planned": len(pairs_text),
+                        "n_pairs_done": n_done,
+                        "n_pairs_scored": len(all_scores),
+                        "n_pairs_skipped_length_mismatch": skipped_length,
+                        "n_pairs_skipped_missing_cot": skipped_no_cot,
+                        "ranked_scores": partial_ranked,
+                        "verified_top_k": [],
+                    },
+                    indent=2,
+                ),
+                encoding="utf-8",
+            )
 
     print(
         f"scored {len(all_scores)} pairs, skipped {skipped_length} for length mismatch, "
@@ -754,6 +795,7 @@ def main() -> None:
         "side": args.side,
         "clean_condition": args.clean_condition,
         "corrupt_condition": args.corrupt_condition,
+        "status": "complete",
         "n_pairs_scored": len(all_scores),
         "n_pairs_skipped_length_mismatch": skipped_length,
         "n_pairs_skipped_missing_cot": skipped_no_cot,
