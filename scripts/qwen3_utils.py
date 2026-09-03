@@ -91,21 +91,29 @@ def load_qwen3(
             stacklevel=2,
         )
 
-    torch_dtype = getattr(torch, dtype)
-    quantization_config = None
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
     if load_in_8bit:
+        # Do NOT also pass torch_dtype here — HF's documented pattern for
+        # bitsandbytes quantization is to let BitsAndBytesConfig own the
+        # compute dtype. Passing both is a known way for the quantization
+        # to not actually shrink memory (confirmed empirically: an earlier
+        # version of this function passed both and OOM'd identically to an
+        # unquantized bf16 load — same ~79GB used, not the expected ~32GB).
         from transformers import BitsAndBytesConfig
 
-        quantization_config = BitsAndBytesConfig(load_in_8bit=True)
-
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForCausalLM.from_pretrained(
-        model_name,
-        torch_dtype=torch_dtype,
-        device_map=device_map,
-        attn_implementation=attn_implementation,
-        quantization_config=quantization_config,
-    )
+        model = AutoModelForCausalLM.from_pretrained(
+            model_name,
+            device_map=device_map,
+            attn_implementation=attn_implementation,
+            quantization_config=BitsAndBytesConfig(load_in_8bit=True),
+        )
+    else:
+        model = AutoModelForCausalLM.from_pretrained(
+            model_name,
+            torch_dtype=getattr(torch, dtype),
+            device_map=device_map,
+            attn_implementation=attn_implementation,
+        )
     if gradient_checkpointing:
         model.gradient_checkpointing_enable()
         model.config.use_cache = False  # incompatible with checkpointing
